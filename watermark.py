@@ -7,15 +7,11 @@ from PIL import Image, ImageDraw, ImageFont
 
 WATERMARK_TEXT = "©NepaliStamps"
 
-# Position options:
-# "top-left"
-# "top-center"
-# "top-right"
-# "center"
-# "bottom-left"
-# "bottom-center"
-# "bottom-right"
-POSITION = "bottom-right"
+# Custom watermark position
+# X = distance from the left
+# Y = distance from the top
+POSITION_X = 355
+POSITION_Y = 500
 
 # Rotation in degrees
 ROTATION = 0
@@ -33,10 +29,7 @@ FONT_SIZE = 40
 # Black = (0, 0, 0)
 # Red   = (255, 0, 0)
 # Blue  = (0, 0, 255)
-WATERMARK_COLOR = (255, 0, 0)
-
-# Distance from image edges
-MARGIN = 30
+WATERMARK_COLOR = (0, 0, 0)
 
 
 # =========================
@@ -54,7 +47,11 @@ OUTPUT_IMAGE = "output/test-stamp-watermarked.jpg"
 image = Image.open(INPUT_IMAGE).convert("RGBA")
 
 # Create transparent layer for watermark
-watermark_layer = Image.new("RGBA", image.size, (0, 0, 0, 0))
+watermark_layer = Image.new(
+    "RGBA",
+    image.size,
+    (0, 0, 0, 0)
+)
 
 draw = ImageDraw.Draw(watermark_layer)
 
@@ -67,61 +64,11 @@ font = ImageFont.truetype("arial.ttf", FONT_SIZE)
 
 
 # =========================
-# Get text dimensions
-# =========================
-
-bbox = draw.textbbox(
-    (0, 0),
-    WATERMARK_TEXT,
-    font=font
-)
-
-text_width = bbox[2] - bbox[0]
-text_height = bbox[3] - bbox[1]
-
-
-# =========================
-# Position
-# =========================
-
-if POSITION == "bottom-right":
-    x = image.width - text_width - MARGIN
-    y = image.height - text_height - MARGIN
-
-elif POSITION == "bottom-left":
-    x = MARGIN
-    y = image.height - text_height - MARGIN
-
-elif POSITION == "bottom-center":
-    x = (image.width - text_width) // 2
-    y = image.height - text_height - MARGIN
-
-elif POSITION == "top-right":
-    x = image.width - text_width - MARGIN
-    y = MARGIN
-
-elif POSITION == "top-left":
-    x = MARGIN
-    y = MARGIN
-
-elif POSITION == "top-center":
-    x = (image.width - text_width) // 2
-    y = MARGIN
-
-elif POSITION == "center":
-    x = (image.width - text_width) // 2
-    y = (image.height - text_height) // 2
-
-else:
-    raise ValueError(f"Unknown position: {POSITION}")
-
-
-# =========================
 # Draw watermark
 # =========================
 
 draw.text(
-    (x, y),
+    (POSITION_X, POSITION_Y),
     WATERMARK_TEXT,
     font=font,
     fill=(*WATERMARK_COLOR, OPACITY)
@@ -161,4 +108,3 @@ image.convert("RGB").save(
 
 
 print(f"Watermarked image saved to: {OUTPUT_IMAGE}")
-    
